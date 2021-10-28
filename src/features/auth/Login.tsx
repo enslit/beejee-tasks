@@ -7,25 +7,15 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import styled from 'styled-components';
-import { Close } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectLoadingState, selectErrorMessage } from './authSlice';
 import ErrorMessage from '../../components/ErrorMessage';
 import { AuthSagaActions } from './sagaActions';
 import { LoginForm } from './models/LoginForm';
-
-interface Props {
-  onClose: () => void;
-}
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../app/constants/routes';
 
 const RootModal = styled(Paper)`
   width: 100%;
@@ -37,10 +27,10 @@ const RootModal = styled(Paper)`
   transform: translate(-50%, -50%);
 `;
 
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  top: 0;
-  right: 15px;
+const FormActions = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const initFormState = {
@@ -56,10 +46,7 @@ const initFormState = {
   },
 };
 
-const Login = forwardRef<HTMLDivElement, Props>(function Login(
-  props,
-  ref
-): JSX.Element {
+const Login = forwardRef<HTMLDivElement, never>(function Login(): JSX.Element {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectLoadingState);
   const error = useAppSelector(selectErrorMessage);
@@ -142,14 +129,6 @@ const Login = forwardRef<HTMLDivElement, Props>(function Login(
 
   return (
     <RootModal>
-      <CloseButton
-        color="inherit"
-        aria-label="close modal"
-        edge="end"
-        onClick={props.onClose}
-      >
-        <Close />
-      </CloseButton>
       <Typography
         id="modal-modal-title"
         variant="h6"
@@ -190,13 +169,18 @@ const Login = forwardRef<HTMLDivElement, Props>(function Login(
             <ErrorMessage massage={error} />
           </Box>
         )}
-        <Button
-          type={'submit'}
-          variant={'contained'}
-          disabled={checkButtonDisabled()}
-        >
-          Login
-        </Button>
+        <FormActions>
+          <Button
+            type={'submit'}
+            variant={'contained'}
+            disabled={checkButtonDisabled()}
+          >
+            Login
+          </Button>
+          <Button component={Link} to={ROUTES.home}>
+            Go back
+          </Button>
+        </FormActions>
       </form>
     </RootModal>
   );

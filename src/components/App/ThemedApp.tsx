@@ -4,6 +4,7 @@ import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentTheme } from '../../app/appSlice';
 import App from './App';
+import { CssBaseline } from '@mui/material';
 
 const AppThemed = (): JSX.Element => {
   const currentTheme = useAppSelector(selectCurrentTheme);
@@ -11,6 +12,7 @@ const AppThemed = (): JSX.Element => {
   return (
     <ThemeProvider theme={Themes[currentTheme]}>
       <StyledEngineProvider injectFirst>
+        <CssBaseline />
         <App />
       </StyledEngineProvider>
     </ThemeProvider>

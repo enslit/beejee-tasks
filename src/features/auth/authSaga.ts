@@ -7,6 +7,12 @@ import { AuthActionTypes } from './sagaActions';
 
 const localStorageTokenKey = 'beejee-token';
 
+export function* initialAuth() {
+  if (localStorage.getItem(localStorageTokenKey)) {
+    yield put(AuthSliceActions.login({ isAdmin: true }));
+  }
+}
+
 export function* logout() {
   localStorage.removeItem(localStorageTokenKey);
   yield put(AuthSliceActions.logout());
@@ -26,12 +32,7 @@ export function* login(action: PayloadAction<LoginForm>) {
         throw new Error('No token in response');
       }
 
-      yield put(
-        AuthSliceActions.login({
-          username: action.payload.username,
-          isAdmin: true,
-        })
-      );
+      yield put(AuthSliceActions.login({ isAdmin: true }));
     } else {
       yield put(AuthSliceActions.setError(response.message));
     }
@@ -43,6 +44,7 @@ export function* login(action: PayloadAction<LoginForm>) {
 }
 
 export function* authWatcher() {
+  yield initialAuth();
   yield takeEvery(AuthActionTypes.Login, login);
   yield takeEvery(AuthActionTypes.Logout, logout);
 }
