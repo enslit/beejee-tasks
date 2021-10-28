@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
@@ -8,16 +8,23 @@ import IconButton from '@mui/material/IconButton';
 import { DarkMode, LightMode } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { AppActions, selectCurrentTheme } from '../../app/appSlice';
+import { selectUser } from '../../features/auth/authSlice';
+import { Button } from '@mui/material';
 
 const HeaderActions = styled('div')(() => ({
   marginLeft: 'auto',
+  display: 'flex',
+  gap: '25px',
 }));
 
 interface AppBar {
+  onClickLogin: () => void;
+  onClickLogout: () => void;
   children: React.ReactNode;
 }
 
 function AppBar(props: AppBar): JSX.Element {
+  const user = useAppSelector(selectUser);
   const currentTheme = useAppSelector(selectCurrentTheme);
   const appDispatch = useAppDispatch();
 
@@ -41,6 +48,12 @@ function AppBar(props: AppBar): JSX.Element {
             >
               {currentTheme === 'dark' ? <DarkMode /> : <LightMode />}
             </IconButton>
+            <Button
+              variant="contained"
+              onClick={user ? props.onClickLogout : props.onClickLogin}
+            >
+              {user ? 'Logout' : 'Login'}
+            </Button>
           </HeaderActions>
         </Toolbar>
       </MuiAppBar>
