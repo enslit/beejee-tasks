@@ -1,33 +1,33 @@
 import React from 'react';
 import { Alert, Snackbar } from '@mui/material';
-import { AppActions, selectErrorMessage } from '../../app/appSlice';
+import { AppActions, selectAppMessage } from '../../app/appSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 
-const ErrorHandler = (): JSX.Element => {
-  const errorMessage = useAppSelector(selectErrorMessage);
+const MessageHandler = (): JSX.Element => {
+  const appMessage = useAppSelector(selectAppMessage);
   const appDispatch = useAppDispatch();
 
   const handleCloseSnackbar = () => {
-    appDispatch(AppActions.clearError());
+    appDispatch(AppActions.clearMessage());
   };
 
   return (
     <Snackbar
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      key={'top-center'}
-      open={!!errorMessage}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      key={'bottom-center'}
+      open={!!appMessage}
       autoHideDuration={6000}
       onClose={handleCloseSnackbar}
     >
       <Alert
         onClose={handleCloseSnackbar}
-        severity="error"
+        severity={appMessage?.type || undefined}
         sx={{ width: '100%' }}
       >
-        {errorMessage}
+        {appMessage?.text}
       </Alert>
     </Snackbar>
   );
 };
 
-export default ErrorHandler;
+export default MessageHandler;

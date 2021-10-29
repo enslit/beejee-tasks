@@ -31,10 +31,12 @@ class TasksApi extends BeeJeeApi {
     );
   }
 
-  public complete(id: number, isAdmin: boolean, token: string) {
+  public complete(id: number, status: TaskStatus, token: string) {
     const body = {
       token,
-      status: isAdmin ? TaskStatus.CompletedAdmin : TaskStatus.Completed,
+      status: TaskStatus.Edited
+        ? TaskStatus.CompletedEdited
+        : TaskStatus.Completed,
     };
 
     return this.fetch<ResponseBeeJeeApi, { status: TaskStatus; token: string }>(
@@ -47,6 +49,7 @@ class TasksApi extends BeeJeeApi {
   public change(id: number, text: string, token: string) {
     const body = {
       token,
+      status: TaskStatus.Edited,
       text,
     };
 

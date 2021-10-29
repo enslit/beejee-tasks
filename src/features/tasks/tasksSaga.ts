@@ -10,6 +10,8 @@ import { Task } from './models/Task';
 import { AddTaskRequestForm } from './models/AddTaskRequestForm';
 import { AddTaskForm } from './models/AddTaskForm';
 import { BeeJeeApi } from '../../utils/api/BeeJeeApi';
+import { AppActions } from '../../app/appSlice';
+import { AuthSliceActions } from '../auth/authSlice';
 
 export function* changeTask(
   action: PayloadAction<{ type: 'complete' | 'edit'; id: number }>
@@ -17,11 +19,18 @@ export function* changeTask(
   yield put(TaskSliceActions.setLoadingState(true));
 
   try {
-    const { auth, tasks }: RootState = yield select();
+    const { tasks }: RootState = yield select();
+    const task = tasks.taskList.find((task) => task.id === action.payload.id);
     const authToken = yield call([BeeJeeApi, BeeJeeApi.getAuthToken]);
 
     if (!authToken) {
+      yield put(AuthSliceActions.logout());
+      yield put(TaskSliceActions.setEditingTask(null));
       throw new Error('No auth token');
+    }
+
+    if (!task) {
+      throw new Error('Task not found');
     }
 
     let response;
@@ -30,7 +39,7 @@ export function* changeTask(
       response = yield call(
         [tasksApi, tasksApi.complete],
         action.payload.id,
-        !!auth.user?.isAdmin,
+        task.status,
         authToken
       );
     } else {
@@ -44,14 +53,27 @@ export function* changeTask(
 
     if (response.status === 'ok') {
       if (action.payload.type === 'edit') {
+        yield put(
+          AppActions.setMessage({
+            type: 'success',
+            text: 'The task has been edited',
+          })
+        );
         yield put(TaskSliceActions.setEditingTask(null));
+      } else {
+        yield put(
+          AppActions.setMessage({
+            type: 'success',
+            text: 'The task has been completed',
+          })
+        );
       }
       yield call(loadTaskList);
     } else {
       throw new Error(response.message);
     }
   } catch (e) {
-    yield put(TaskSliceActions.setError(e.message));
+    yield put(AppActions.setMessage({ type: 'error', text: e.message }));
   } finally {
     yield put(TaskSliceActions.setLoadingState(false));
   }
@@ -72,6 +94,12 @@ export function* addTask() {
     const response = yield call([tasksApi, tasksApi.create], formData);
 
     if (response.status === 'ok') {
+      yield put(
+        AppActions.setMessage({
+          type: 'success',
+          text: 'The task has been added',
+        })
+      );
       yield put(TaskSliceActions.setVisibleForm(false));
       yield call(loadTaskList);
     } else {
@@ -93,7 +121,7 @@ export function* addTask() {
       }
     }
   } catch (e) {
-    yield put(TaskSliceActions.setError(e.message));
+    yield put(AppActions.setMessage({ type: 'error', text: e.message }));
   } finally {
     yield put(TaskSliceActions.setLoadingState(false));
   }
@@ -133,7 +161,7 @@ export function* loadTaskList() {
   }
   try {
   } catch (e) {
-    yield put(TaskSliceActions.setError(e.message));
+    yield put(AppActions.setMessage({ type: 'error', text: e.message }));
   } finally {
     yield put(TaskSliceActions.setLoadingState(false));
   }

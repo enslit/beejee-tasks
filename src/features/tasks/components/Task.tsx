@@ -4,7 +4,6 @@ import React, {
   MouseEventHandler,
   useCallback,
   useMemo,
-  useState,
 } from 'react';
 import { Task } from '../models/Task';
 import {
@@ -17,7 +16,7 @@ import {
 import { Cancel, Done, Edit, Save } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectUser } from '../../auth/authSlice';
-import { styled, CSSObject } from '@mui/material/styles';
+import { CSSObject, styled } from '@mui/material/styles';
 import { TaskStatus } from '../models/TaskStatus';
 import { selectEditedText, TaskSliceActions } from '../tasksSlice';
 
@@ -31,7 +30,6 @@ type Props = {
 };
 
 const completedMixin: CSSObject = {
-  textDecoration: 'line-through',
   opacity: 0.5,
 };
 
@@ -39,15 +37,26 @@ const TaskContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'completed',
 })<{ completed: boolean }>(({ theme, completed }) => {
   return {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: '15px',
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     width: '100%',
     ...(completed && { ...completedMixin }),
   };
 });
+
+const TaskText = styled('span', {
+  shouldForwardProp: (prop) => prop !== 'completed',
+})<{ completed: boolean }>(({ completed }) => ({
+  textDecoration: completed ? 'line-through' : 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '15px',
+}));
 
 const TaskActions = styled(Box)`
   display: flex;
@@ -80,29 +89,53 @@ const TaskItem: FC<Props> = (props) => {
   }, [props]);
 
   const isCompleted = useMemo(() => {
-    return [TaskStatus.Completed, TaskStatus.CompletedAdmin].some(
+    return [TaskStatus.Completed, TaskStatus.CompletedEdited].some(
+      (s) => s === props.task.status
+    );
+  }, [props]);
+
+  const isEdited = useMemo(() => {
+    return [TaskStatus.Edited, TaskStatus.CompletedEdited].some(
       (s) => s === props.task.status
     );
   }, [props]);
 
   return (
     <TaskContainer completed={isCompleted}>
-      {props.isEditing ? (
-        <FormControl fullWidth>
-          <TextField
-            required
-            type={'text'}
-            name={'task'}
-            label={'Task: ' + props.task.id}
-            value={editedText}
-            onChange={handleChangeInput}
-          />
-        </FormControl>
-      ) : (
-        <Typography variant={'body1'} component={'p'}>
-          {props.task.text}
-        </Typography>
+      {isEdited && (
+        <Edit
+          color={'secondary'}
+          fontSize={'small'}
+          sx={{ position: 'absolute', top: '25px', left: '-40px' }}
+        />
       )}
+      <Box sx={{ flexGrow: 1 }}>
+        {props.isEditing ? (
+          <FormControl fullWidth>
+            <TextField
+              required
+              type={'text'}
+              name={'task'}
+              label={'Task: ' + props.task.id}
+              value={editedText}
+              onChange={handleChangeInput}
+            />
+          </FormControl>
+        ) : (
+          <>
+            <Typography
+              variant={'body2'}
+              component={'em'}
+              color={'text.secondary'}
+            >
+              {props.task.username} ({props.task.email})
+            </Typography>
+            <Typography variant={'body1'} component={'p'}>
+              <TaskText completed={isCompleted}>{props.task.text}</TaskText>
+            </Typography>
+          </>
+        )}
+      </Box>
       {!isCompleted && user && user.isAdmin && (
         <TaskActions>
           <IconButton

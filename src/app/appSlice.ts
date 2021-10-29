@@ -2,13 +2,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import { Themes } from './theme';
 
+type AppMessageType = 'error' | 'warning' | 'success';
+
+type AppMessage = {
+  type: AppMessageType;
+  text: string;
+} | null;
+
 interface ImportState {
-  error: string;
+  message: AppMessage;
   theme: keyof typeof Themes;
 }
 
 const initialState: ImportState = {
-  error: '',
+  message: null,
   theme: 'dark',
 };
 
@@ -19,18 +26,25 @@ export const appSlice = createSlice({
     changeTheme: (state) => {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
     },
-    setError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+    setMessage: (
+      state,
+      action: PayloadAction<{ type: AppMessageType; text: string }>
+    ) => {
+      state.message = {
+        type: action.payload.type,
+        text: action.payload.text,
+      };
     },
-    clearError: (state) => {
-      state.error = '';
+    clearMessage: (state) => {
+      state.message = null;
     },
   },
 });
 
 export const AppActions = appSlice.actions;
 
-export const selectErrorMessage = (state: RootState): string => state.app.error;
+export const selectAppMessage = (state: RootState): AppMessage =>
+  state.app.message;
 export const selectCurrentTheme = (state: RootState): keyof typeof Themes =>
   state.app.theme;
 

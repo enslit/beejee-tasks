@@ -18,7 +18,9 @@ export function* initialAuth() {
       yield put(AuthSliceActions.login({ isAdmin: true }));
     } else {
       localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
-      yield put(AppActions.setError('Token expired'));
+      yield put(
+        AppActions.setMessage({ type: 'error', text: 'Token expired' })
+      );
     }
   }
 }
