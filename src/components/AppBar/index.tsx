@@ -13,37 +13,18 @@ import { Button } from '@mui/material';
 import { AuthSagaActions } from '../../features/auth/sagaActions';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../app/constants/routes';
-
-const HeaderActions = styled('div')(() => ({
-  marginLeft: 'auto',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '25px',
-}));
-
-const Title = styled('div')(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '15px',
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
+import { HeaderActions } from './styledComponents/HeaderActions';
+import { AppTitle } from './styledComponents/AppTitle';
+import { DrawerHeader } from './styledComponents/DrawerHeader';
 
 const AppBar: FC = (props): JSX.Element => {
   const user = useAppSelector(selectUser);
   const currentTheme = useAppSelector(selectCurrentTheme);
   const dispatch = useAppDispatch();
 
-  const handlerToggleTheme = () => {
+  const handlerToggleTheme = useCallback(() => {
     dispatch(AppActions.changeTheme());
-  };
+  }, [dispatch]);
 
   const handleClickLogout = useCallback(() => {
     dispatch(AuthSagaActions.logout());
@@ -53,7 +34,7 @@ const AppBar: FC = (props): JSX.Element => {
     <Box sx={{ display: 'flex' }}>
       <MuiAppBar position="fixed">
         <Toolbar>
-          <Title>
+          <AppTitle>
             <Typography variant="h6" noWrap component="div">
               BeeJee Task List
             </Typography>
@@ -63,7 +44,7 @@ const AppBar: FC = (props): JSX.Element => {
                 (Admin mode)
               </Typography>
             )}
-          </Title>
+          </AppTitle>
           <HeaderActions>
             <IconButton
               color="inherit"

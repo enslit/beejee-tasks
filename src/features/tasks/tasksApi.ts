@@ -1,25 +1,16 @@
 import { BeeJeeApi, ResponseBeeJeeApi } from '../../utils/api/BeeJeeApi';
 import { Task } from './models/Task';
 import { AddTaskRequestForm } from './models/AddTaskRequestForm';
-import { DEVELOPER_NAME } from '../../app/constants/app';
 import { TaskStatus } from './models/TaskStatus';
 
 class TasksApi extends BeeJeeApi {
-  private readonly subUrl: string;
-
-  constructor(subUrl: string) {
-    super();
-    this.subUrl = subUrl;
-  }
-
   public getTasks(
     page: number,
     sort_field: keyof Task,
     sort_direction: 'asc' | 'desc'
   ) {
-    return this.fetch<ResponseBeeJeeApi>(`${this.subUrl}`, 'GET', {
+    return this.fetch<ResponseBeeJeeApi>(`/`, 'GET', {
       queryParams: {
-        developer: DEVELOPER_NAME,
         page,
         sort_field,
         sort_direction,
@@ -32,59 +23,41 @@ class TasksApi extends BeeJeeApi {
 
   public create(form: AddTaskRequestForm) {
     return this.fetch<ResponseBeeJeeApi, AddTaskRequestForm>(
-      `${this.subUrl}create`,
+      `/create`,
       'POST',
       {
         body: form,
-        queryParams: {
-          developer: DEVELOPER_NAME,
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
       }
     );
   }
 
   public complete(id: number, isAdmin: boolean, token: string) {
+    const body = {
+      token,
+      status: isAdmin ? TaskStatus.CompletedAdmin : TaskStatus.Completed,
+    };
+
     return this.fetch<ResponseBeeJeeApi, { status: TaskStatus; token: string }>(
-      `${this.subUrl}edit/${id}`,
+      `/edit/${id}`,
       'POST',
-      {
-        body: {
-          token,
-          status: isAdmin ? TaskStatus.CompletedAdmin : TaskStatus.Completed,
-        },
-        queryParams: {
-          developer: DEVELOPER_NAME,
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
+      { body }
     );
   }
 
   public change(id: number, text: string, token: string) {
+    const body = {
+      token,
+      text,
+    };
+
     return this.fetch<ResponseBeeJeeApi, { text: string; token: string }>(
-      `${this.subUrl}edit/${id}`,
+      `/edit/${id}`,
       'POST',
-      {
-        body: {
-          token,
-          text,
-        },
-        queryParams: {
-          developer: DEVELOPER_NAME,
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
+      { body }
     );
   }
 }
 
-const tasksApi = new TasksApi('/');
+const tasksApi = new TasksApi();
 
 export default tasksApi;

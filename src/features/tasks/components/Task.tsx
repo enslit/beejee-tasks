@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Task } from './models/Task';
+import { Task } from '../models/Task';
 import {
   Box,
   FormControl,
@@ -15,11 +15,11 @@ import {
   Typography,
 } from '@mui/material';
 import { Cancel, Done, Edit, Save } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectUser } from '../auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectUser } from '../../auth/authSlice';
 import { styled, CSSObject } from '@mui/material/styles';
-import { TaskStatus } from './models/TaskStatus';
-import { selectEditedText, TaskSliceActions } from './tasksSlice';
+import { TaskStatus } from '../models/TaskStatus';
+import { selectEditedText, TaskSliceActions } from '../tasksSlice';
 
 type Props = {
   task: Task;

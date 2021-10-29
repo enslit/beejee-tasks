@@ -7,8 +7,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Box, Button, Paper, TextField, Typography } from '@mui/material';
-import styled from 'styled-components';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectLoadingState, selectErrorMessage } from './authSlice';
 import ErrorMessage from '../../components/ErrorMessage';
@@ -16,22 +15,8 @@ import { AuthSagaActions } from './sagaActions';
 import { LoginForm } from './models/LoginForm';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../app/constants/routes';
-
-const RootModal = styled(Paper)`
-  width: 100%;
-  max-width: 500px;
-  padding: 16px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-
-const FormActions = styled(Box)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
+import { RootLogin } from './styledComponents/RootLoginForm';
+import { LoginFormActions } from './styledComponents/LoginFormActions';
 
 const initFormState = {
   username: {
@@ -128,7 +113,7 @@ const Login = forwardRef<HTMLDivElement, never>(function Login(): JSX.Element {
   }, [error]);
 
   return (
-    <RootModal>
+    <RootLogin>
       <Typography
         id="modal-modal-title"
         variant="h6"
@@ -169,7 +154,7 @@ const Login = forwardRef<HTMLDivElement, never>(function Login(): JSX.Element {
             <ErrorMessage massage={error} />
           </Box>
         )}
-        <FormActions>
+        <LoginFormActions>
           <Button
             type={'submit'}
             variant={'contained'}
@@ -180,9 +165,9 @@ const Login = forwardRef<HTMLDivElement, never>(function Login(): JSX.Element {
           <Button component={Link} to={ROUTES.home}>
             Go back
           </Button>
-        </FormActions>
+        </LoginFormActions>
       </form>
-    </RootModal>
+    </RootLogin>
   );
 });
 

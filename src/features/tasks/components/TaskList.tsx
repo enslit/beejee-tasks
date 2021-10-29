@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, useCallback, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
   selectEditingTask,
   selectTasks,
@@ -11,7 +11,7 @@ import {
   selectTasksVisibleForm,
   selectTotalTasks,
   TaskSliceActions,
-} from './tasksSlice';
+} from '../tasksSlice';
 import {
   Box,
   Collapse,
@@ -30,9 +30,9 @@ import {
 import TaskItem from './Task';
 import { styled } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
-import { TasksSagaActions } from './sagaActions';
-import { TASK_PAGE_SIZE } from '../../app/constants/app';
-import { Task } from './models/Task';
+import { TasksSagaActions } from '../sagaActions';
+import { TASK_PAGE_SIZE } from '../../../app/constants/app';
+import { Task } from '../models/Task';
 import { Add } from '@mui/icons-material';
 import AddNewTaskForm from './AddNewTaskForm';
 

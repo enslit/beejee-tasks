@@ -1,5 +1,8 @@
 import { BaseApi } from './BaseApi';
-import { LOCAL_STORAGE_TOKEN_KEY } from '../../app/constants/app';
+import {
+  DEVELOPER_NAME,
+  LOCAL_STORAGE_TOKEN_KEY,
+} from '../../app/constants/app';
 import { Token } from '../../features/auth/models/Token';
 
 export interface ResponseBeeJeeApi {
@@ -10,6 +13,10 @@ export interface ResponseBeeJeeApi {
 export class BeeJeeApi extends BaseApi {
   constructor() {
     super('https://uxcandy.com/~shapoval/test-task-backend/v2');
+
+    this.setSearchQueries({
+      developer: DEVELOPER_NAME,
+    });
   }
 
   static getAuthToken = async () => {

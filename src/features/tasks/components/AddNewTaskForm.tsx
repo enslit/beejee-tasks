@@ -7,10 +7,10 @@ import React, {
 } from 'react';
 import { Box, Button, FormControl, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { selectAddTaskForm, TaskSliceActions } from './tasksSlice';
-import { AddTaskForm } from './models/AddTaskForm';
-import { TasksSagaActions } from './sagaActions';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectAddTaskForm, TaskSliceActions } from '../tasksSlice';
+import { AddTaskForm } from '../models/AddTaskForm';
+import { TasksSagaActions } from '../sagaActions';
 
 const TaskForm = styled('form')(({ theme }) => ({
   paddingTop: '35px',
