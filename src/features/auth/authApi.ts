@@ -1,5 +1,6 @@
 import { BeeJeeApi, ResponseBeeJeeApi } from '../../utils/api/BeeJeeApi';
 import { LoginForm } from './models/LoginForm';
+import { DEVELOPER_NAME } from '../../app/constants/app';
 
 class AuthApi extends BeeJeeApi {
   private readonly subUrl: string;
@@ -13,7 +14,7 @@ class AuthApi extends BeeJeeApi {
     return this.fetch<ResponseBeeJeeApi, LoginForm>(`${this.subUrl}`, 'POST', {
       body: form,
       queryParams: {
-        developer: 'Enslit',
+        developer: DEVELOPER_NAME,
       },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
