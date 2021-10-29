@@ -17,7 +17,7 @@ const TaskForm = styled('form')(({ theme }) => ({
   paddingBottom: theme.spacing(2),
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gridGap: theme.spacing(1),
+  gridGap: theme.spacing(2),
 }));
 
 const FormActions = styled(Box)(() => ({

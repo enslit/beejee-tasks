@@ -3,12 +3,13 @@ import { RootState } from '../../app/store';
 import { Task } from './models/Task';
 import { TasksResponse } from './models/TasksResponse';
 import { AddTaskForm } from './models/AddTaskForm';
+import { SortDirection } from './models/SortDirection';
 
 interface InitState {
   taskList: Task[];
   page: number;
   sort: keyof Task;
-  sortDirection: 'asc' | 'desc';
+  sortDirection: SortDirection;
   total: number;
   isLoading: boolean;
   error: string;
@@ -63,7 +64,7 @@ export const tasksSlice = createSlice({
     setSortField: (state, action: PayloadAction<keyof Task>) => {
       state.sort = action.payload;
     },
-    setSortDirection: (state, action: PayloadAction<'asc' | 'desc'>) => {
+    setSortDirection: (state, action: PayloadAction<SortDirection>) => {
       state.sortDirection = action.payload;
     },
     setVisibleForm: (state, action: PayloadAction<boolean>) => {
@@ -127,7 +128,7 @@ export const selectTasksError = (state: RootState): string => state.tasks.error;
 export const selectTasksPage = (state: RootState): number => state.tasks.page;
 export const selectTasksSortField = (state: RootState): keyof Task =>
   state.tasks.sort;
-export const selectTasksSortDirection = (state: RootState): 'asc' | 'desc' =>
+export const selectTasksSortDirection = (state: RootState): SortDirection =>
   state.tasks.sortDirection;
 export const selectAddTaskForm = (state: RootState): AddTaskForm =>
   state.tasks.form;

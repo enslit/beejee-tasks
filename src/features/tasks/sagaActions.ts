@@ -1,4 +1,5 @@
 import { Task } from './models/Task';
+import { SortDirection } from './models/SortDirection';
 
 export enum TasksActionTypes {
   LoadTasks = 'LOAD_TASKS',
@@ -19,7 +20,7 @@ const changeSortField = (field: keyof Task) => ({
   payload: field,
 });
 
-const changeSortDirection = (direction: 'asc' | 'desc') => ({
+const changeSortDirection = (direction: SortDirection) => ({
   type: TasksActionTypes.ChangeSortDirection,
   payload: direction,
 });

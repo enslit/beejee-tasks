@@ -12,6 +12,7 @@ import { AddTaskForm } from './models/AddTaskForm';
 import { BeeJeeApi } from '../../utils/api/BeeJeeApi';
 import { AppActions } from '../../app/appSlice';
 import { AuthSliceActions } from '../auth/authSlice';
+import { SortDirection } from './models/SortDirection';
 
 export function* changeTask(
   action: PayloadAction<{ type: 'complete' | 'edit'; id: number }>
@@ -137,7 +138,7 @@ export function* changeSortField(action: PayloadAction<keyof Task>) {
   yield fork(loadTaskList);
 }
 
-export function* changeSortDirection(action: PayloadAction<'asc' | 'desc'>) {
+export function* changeSortDirection(action: PayloadAction<SortDirection>) {
   yield put(TaskSliceActions.setSortDirection(action.payload));
   yield fork(loadTaskList);
 }

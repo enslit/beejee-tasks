@@ -2,12 +2,13 @@ import { BeeJeeApi, ResponseBeeJeeApi } from '../../utils/api/BeeJeeApi';
 import { Task } from './models/Task';
 import { AddTaskRequestForm } from './models/AddTaskRequestForm';
 import { TaskStatus } from './models/TaskStatus';
+import { SortDirection } from './models/SortDirection';
 
 class TasksApi extends BeeJeeApi {
   public getTasks(
     page: number,
     sort_field: keyof Task,
-    sort_direction: 'asc' | 'desc'
+    sort_direction: SortDirection
   ) {
     return this.fetch<ResponseBeeJeeApi>(`/`, 'GET', {
       queryParams: {

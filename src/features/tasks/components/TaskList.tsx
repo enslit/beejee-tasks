@@ -1,5 +1,5 @@
-import React, { ChangeEvent, FC, useCallback, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import React, { ChangeEvent, FC, useRef } from 'react';
+import { useAppSelector } from '../../../app/hooks';
 import {
   selectEditingTask,
   selectTasks,
@@ -10,76 +10,57 @@ import {
   selectTasksSortField,
   selectTasksVisibleForm,
   selectTotalTasks,
-  TaskSliceActions,
 } from '../tasksSlice';
 import {
   Box,
   Collapse,
-  Fab,
   FormControl,
   InputLabel,
-  List,
   ListItem,
   MenuItem,
   Pagination,
-  Paper,
   Select,
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import TaskItem from './Task';
-import { styled } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
-import { TasksSagaActions } from '../sagaActions';
 import { TASK_PAGE_SIZE } from '../../../app/constants/app';
 import { Task } from '../models/Task';
 import { Add } from '@mui/icons-material';
 import AddNewTaskForm from './AddNewTaskForm';
+import Loader from '../../../components/Loader/Loader';
+import ListRoot from '../styledComponents/ListRoot';
+import ListHead from '../styledComponents/ListHead';
+import SortControls from '../styledComponents/SortControls';
+import AddTaskButton from '../styledComponents/AddTaskButton';
+import StyledList from '../styledComponents/StyledList';
+import { StylePagination } from '../styledComponents/StylePagination';
+import { SortDirection } from '../models/SortDirection';
 
-const ListRoot = styled(Box)(() => ({
-  maxWidth: '700px',
-  margin: '0 auto',
-}));
+interface Props {
+  onPageChange: (event: ChangeEvent<unknown>, value: number) => void;
+  onSortFieldChange: (event: SelectChangeEvent<keyof Task>) => void;
+  onSortDirectionChange: (event: SelectChangeEvent<SortDirection>) => void;
+  onClickAddTask: () => void;
+  onSaveEditedTask: (id: number) => void;
+  onComplete: (id: number) => void;
+  onCancelEdit: () => void;
+  onEdit: (id: number) => void;
+}
 
-const ListHead = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'base-line',
-}));
+const TaskList: FC<Props> = (props) => {
+  const {
+    onSortFieldChange,
+    onSortDirectionChange,
+    onCancelEdit,
+    onClickAddTask,
+    onPageChange,
+    onEdit,
+    onSaveEditedTask,
+    onComplete,
+  } = props;
 
-const SortControls = styled(Box)(() => ({
-  width: '250px',
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gridGap: '10px',
-}));
-
-const StyledList = styled(List, {
-  shouldForwardProp: (prop) => prop !== 'isLoading',
-})<{ isLoading: boolean }>(({ theme, isLoading }) => ({
-  filter: isLoading ? 'blur(4px)' : 'none',
-  transition: theme.transitions.create(['filter', 'height'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-}));
-
-const StylePagination = {
-  marginTop: '15px',
-  display: 'flex',
-  justifyContent: 'center',
-};
-
-const AddTaskButton = styled(Fab)(() => ({
-  position: 'absolute',
-  bottom: -20,
-  left: '50%',
-  zIndex: 100,
-}));
-
-const TaskList: FC = () => {
-  const dispatch = useAppDispatch();
   const taskList = useAppSelector(selectTasks);
   const totalTasks = useAppSelector(selectTotalTasks);
   const isLoading = useAppSelector(selectTasksLoadingState);
@@ -91,53 +72,6 @@ const TaskList: FC = () => {
   const editingTask = useAppSelector(selectEditingTask);
 
   const addFormContainerRef = useRef<HTMLDivElement>(null);
-
-  const handleSaveEditedTask = useCallback(
-    (id: number) => {
-      dispatch(TasksSagaActions.saveEditedTask(id));
-    },
-    [dispatch]
-  );
-
-  const handleCancelEdit = useCallback(() => {
-    dispatch(TaskSliceActions.setEditingTask(null));
-  }, [dispatch]);
-
-  const handleClickAddTask = useCallback(() => {
-    dispatch(TaskSliceActions.setVisibleForm(true));
-  }, [dispatch]);
-
-  const handleComplete = useCallback(
-    (id: number) => {
-      dispatch(TasksSagaActions.completeTask(id));
-    },
-    [dispatch]
-  );
-
-  const handleEdit = useCallback(
-    (id: number) => {
-      dispatch(TaskSliceActions.setEditingTask(id));
-    },
-    [dispatch]
-  );
-
-  const handlePageChange = (event: ChangeEvent<unknown>, value: number) => {
-    dispatch(TasksSagaActions.changePage(value));
-  };
-
-  const handleSortFieldChange = (event: SelectChangeEvent<keyof Task>) => {
-    dispatch(
-      TasksSagaActions.changeSortField(event.target.value as keyof Task)
-    );
-  };
-
-  const handleSortDirectionChange = (
-    event: SelectChangeEvent<'asc' | 'desc'>
-  ) => {
-    dispatch(
-      TasksSagaActions.changeSortDirection(event.target.value as 'asc' | 'desc')
-    );
-  };
 
   return (
     <ListRoot>
@@ -164,10 +98,15 @@ const TaskList: FC = () => {
                 id="sortField"
                 value={sortField}
                 label="Sort Field"
-                onChange={handleSortFieldChange}
+                onChange={onSortFieldChange}
+                disabled={isLoading}
               >
                 {Object.keys(taskList[0]).map((field) => (
-                  <MenuItem key={field} value={field}>
+                  <MenuItem
+                    key={field}
+                    value={field}
+                    sx={{ textTransform: 'capitalize' }}
+                  >
                     {field}
                   </MenuItem>
                 ))}
@@ -182,10 +121,11 @@ const TaskList: FC = () => {
                 id="sortDirection"
                 value={sortDirection}
                 label="Sort Direction"
-                onChange={handleSortDirectionChange}
+                onChange={onSortDirectionChange}
+                disabled={isLoading}
               >
-                <MenuItem value={'desc'}>DESC</MenuItem>
-                <MenuItem value={'asc'}>ASC</MenuItem>
+                <MenuItem value={'desc'}>Desc</MenuItem>
+                <MenuItem value={'asc'}>Asc</MenuItem>
               </Select>
             </FormControl>
           </SortControls>
@@ -204,27 +144,30 @@ const TaskList: FC = () => {
           <AddTaskButton
             color={'primary'}
             size={'small'}
-            onClick={handleClickAddTask}
+            onClick={onClickAddTask}
           >
             <Add />
           </AddTaskButton>
         )}
       </Box>
       {taskList.length > 0 && (
-        <StyledList isLoading={isLoading}>
-          {taskList.map((task) => (
-            <ListItem key={task.id} divider={true}>
-              <TaskItem
-                isEditing={editingTask === task.id}
-                task={task}
-                onComplete={handleComplete}
-                onEdit={handleEdit}
-                onSave={handleSaveEditedTask}
-                onCancel={handleCancelEdit}
-              />
-            </ListItem>
-          ))}
-        </StyledList>
+        <Box sx={{ position: 'relative' }}>
+          <StyledList isLoading={isLoading}>
+            {taskList.map((task) => (
+              <ListItem key={task.id} divider={true}>
+                <TaskItem
+                  isEditing={editingTask === task.id}
+                  task={task}
+                  onComplete={onComplete}
+                  onEdit={onEdit}
+                  onSave={onSaveEditedTask}
+                  onCancel={onCancelEdit}
+                />
+              </ListItem>
+            ))}
+          </StyledList>
+          {isLoading && <Loader size={90} />}
+        </Box>
       )}
       {totalTasks > 3 && (
         <Stack spacing={3}>
@@ -233,7 +176,7 @@ const TaskList: FC = () => {
             page={currentPage}
             disabled={isLoading}
             count={Math.ceil(totalTasks / TASK_PAGE_SIZE)}
-            onChange={handlePageChange}
+            onChange={onPageChange}
           />
         </Stack>
       )}

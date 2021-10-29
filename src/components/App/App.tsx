@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import AppBar from '../AppBar';
-import TaskList from '../../features/tasks/components/TaskList';
+import Tasks from '../../features/tasks/';
 import { selectUser } from '../../features/auth/authSlice';
 import { useAppSelector } from '../../app/hooks';
 import Login from '../../features/auth/Login';
@@ -16,7 +16,7 @@ function App() {
     <ConnectedRouter history={browserHistory}>
       <AppBar>
         <Switch>
-          <Route exact path="/" component={TaskList} />
+          <Route exact path="/" component={Tasks} />
           {!user && <Route path="/login" component={Login} />}
           <Redirect to={'/'} />
         </Switch>
